@@ -42,16 +42,6 @@ except IOError:
     ser.open()
 
 
-# Pode ser que a porta ja esteja aberta
-# Se for o caso, a gente toma o erro
-# raise SerialException("Port is already open.")
-# com esse try, a exception pode ser gerenciada
-# try:
-#    ser.open()
-# except:
-#    pass
-
-
 # L O O P  D E  I N T E R A C A O   C O M   O   A R D U I N O
 while True:
     bytes_lidos = ser.readline()
