@@ -1,0 +1,3 @@
+[submodule "sketch/rfid"]
+	path = sketch/rfid
+	url = https://github.com/miguelbalboa/rfid.git

@@ -27,10 +27,10 @@ def transfere_registros_sqlite_to_mariadb():
         
         registro = model.Registro(strMomento,strIdCard,intAutorizado,strTransfEm)
 
-        print("registro.momento:"+ registro.momento)
-        print("registro.id_card:" +registro.id_card)
-        print("registro.autorizado:" +str(registro.autorizado))
-        print("registro.transf_em:" +registro.transf_em)
+        print("registro.momento:" + registro.momento)
+        print("registro.id_card:" + registro.id_card)
+        print("registro.autorizado:" + str(registro.autorizado))
+        print("registro.transf_em:" + registro.transf_em)
         
         try:
             mariaCmd.insert_into_registro(registro)
