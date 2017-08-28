@@ -7,11 +7,11 @@ mariadbDb='catracas'
 
 
 conn = pymysql.connect(
-             host=mariadbServer,
-             # unix_socket='/tmp/mysql.sock',
-             user=mariadbUser,
-             passwd=mariadbPasswd,
-             db=mariadbDb)
+    host=mariadbServer,
+    # unix_socket='/tmp/mysql.sock',
+    user=mariadbUser,
+    passwd=mariadbPasswd,
+    db=mariadbDb)
 
 
 

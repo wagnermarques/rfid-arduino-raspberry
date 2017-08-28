@@ -31,9 +31,7 @@ try:
         timeout=0.1
     )
 
-    # try to open port, if possible print message and proceed with 'while True:'
     # tenta abrir a porta serial do arduino
-    # se der printa a msg e continua
     # caso contrario cai no except
     ser.isOpen()
 except IOError:
@@ -60,13 +58,13 @@ while True:
 
         # o resultado indica se a pessoa foi identificada ou nao
         # se o resultVerificacao for None, significa que nao se identificou uma pessoa
-        resultVerificacao = dbCmd.verifica_pessoa_cadastrada_by_id_card(strCard_uid)
+        objPessoaVerificada = dbCmd.verifica_pessoa_cadastrada_by_id_card(strCard_uid)
         
-        if (resultVerificacao is not None):
-            objPessoaVerificada = resultVerificacao
+        if (objPessoaVerificada is not None):
             # esse um significa que a pessoa esta corretamente identificada
             objRegistro.autorizado = 1
-            print(resultVerificacao)
+            objRegistro.id_pessoa_identificada = objPessoaVerificada.matricula
+            print(objPessoaVerificada)
         else:
             print("Nao Identificado")
             # resultVerificacao vale None

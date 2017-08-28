@@ -7,7 +7,15 @@ conn = sqlite3.connect('catracas.db')
 # https://www.youtube.com/watch?v=o-vsdfCBpsU&list=PLQVvvaa0QuDezJh0sC5CqXLKZTSKU1YNo
 def create_table():
     c = conn.cursor()
-    c.execute('CREATE TABLE IF NOT EXISTS registros (dev_id int ,momento TEXT, id_card TEXT, autorizado INTEGER, transferido_em TEXT);')
+    sqlCreateRegistroTable = ('CREATE TABLE IF NOT EXISTS registros ('+
+    'dev_id int ,'+
+    'momento TEXT, '+
+    'id_card TEXT, '+
+    'autorizado INTEGER,'+ 
+    'id_pessoa_autorizada int, '+
+    'transferido_em TEXT)')
+    
+    c.execute(sqlCreateRegistroTable)
     c.execute('CREATE TABLE IF NOT EXISTS cadastro_pessoas (nome TEXT, matricula INTEGER, id_card TEXT);')    
     c.execute('CREATE UNIQUE INDEX IF NOT EXISTS rmUniqIdx ON cadastro_pessoas (matricula);')
     # c.execute("INSERT INTO cadastro_pessoas (nome,matricula,id_card) values ('nomeTeste',123,'124Teste')")
@@ -19,10 +27,10 @@ def insert_into_registro(registro):
     str_momento = str(registro.momento)
     str_id_card = str(registro.id_card)
     num_autorizado = registro.autorizado
-    trans_em = str(registro.transf_em)
-    reg = [(str_momento, str_id_card, num_autorizado,trans_em)]
+    id_pessoa_autorizada = registro.id_pessoa_identificada
+    reg = [(str_momento, str_id_card, num_autorizado,id_pessoa_autorizada)]
 
-    sqlInsert = "INSERT INTO registros (momento,id_card,autorizado) values (?,?,?,?)"
+    sqlInsert = "INSERT INTO registros (momento,id_card,autorizado,id_pessoa_autorizada) values (?,?,?,?)"
     c.executemany(sqlInsert, reg)
     conn.commit()
     c.close()

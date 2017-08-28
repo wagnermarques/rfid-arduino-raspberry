@@ -47,14 +47,10 @@
       //Serial.println("=== void setup() {...");
       Serial.begin(9600); // Inicializa comunicacao serial com o computador
 
-      // Nao tendo porta serial aberto, nao faz nada. Importante para arduino baseados no ATMEGA32U
+      // Nao tendo porta serial aberta, nao faz nada. Importante para arduino baseados no ATMEGA32U
       while (!Serial);   
       SPI.begin();        // Inicializa barramento SPI
       mfrc522.PCD_Init(); // Inicializa cartao MFRC522
-    
-      //Setando o pino 13 como output porque vamos querer acende-lo quando um usuario logar
-      //Esse pino sera utilizado tambem pra forcender os 5 volts pra significar que o usuario foi reconhecido 
-      pinMode(LED_BUILTIN, OUTPUT);         
   }
  
  
@@ -76,7 +72,9 @@
         Serial.println(F("msg | Cartao Imcompativel. Apenas Mifare Classic sao suportados."));
         return;         
       }
-      
+
+
+      Serial.println(F("msg_card_uid |"));
       //byte cardUidByte[10] = get_card_uidByte();
       //dump_byte_array(mfrc522.uid.uidByte, mfrc522.uid.size);
       for (byte i = 0; i < mfrc522.uid.size; i++) {
