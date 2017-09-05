@@ -69,18 +69,20 @@
           return;
  
       if(!verifica_se_o_cartao_e_compativel()){
-        Serial.println(F("msg | Cartao Imcompativel. Apenas Mifare Classic sao suportados."));
+        Serial.println(F("msg | Cartao Imcompativel. Apenas Mifare Classic sao suportados.!"));
         return;         
       }
 
 
-      Serial.println(F("msg_card_uid |"));
+      //Serial.println(F("msg_card_uid |"));
       //byte cardUidByte[10] = get_card_uidByte();
       //dump_byte_array(mfrc522.uid.uidByte, mfrc522.uid.size);
+	Serial.print("msg_card_uid |");
       for (byte i = 0; i < mfrc522.uid.size; i++) {
-          Serial.print(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " ");
-          Serial.print(mfrc522.uid.uidByte[i], HEX);
+	Serial.print(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " ");
+	Serial.print(mfrc522.uid.uidByte[i], HEX);
       }
+      Serial.print("!");
 
   }
  

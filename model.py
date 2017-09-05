@@ -6,7 +6,7 @@ class Pessoa:
 
 
 class Registro:
-    def __init__(self, momento, id_card, autorizado=False,id_pessoa=None,transf_em=None):
+    def __init__(self, momento, id_card, autorizado=0,id_pessoa=None,transf_em=None):
         self.momento = momento
         self.id_card = id_card
         self.autorizado = autorizado        

@@ -1,3 +1,5 @@
+.shema table_name
+
 sqlite> 
 sqlite> 
 sqlite> .mode column

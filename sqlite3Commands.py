@@ -1,5 +1,5 @@
 import sqlite3
-
+import model
 
 conn = sqlite3.connect('catracas.db')
 
@@ -57,7 +57,7 @@ def verifica_pessoa_cadastrada_by_id_card(id_card):
 
     c = conn.cursor()
     sqlInsert = "SELECT nome, matricula, id_card FROM cadastro_pessoas where id_card = '" + str_id_card + "';"
-    print(sqlInsert)
+
     resultCursor = c.execute(sqlInsert)
 
     resultList = resultCursor.fetchall()
@@ -68,8 +68,10 @@ def verifica_pessoa_cadastrada_by_id_card(id_card):
     if (len(resultList) == 1):
         row = resultList[0]
         pessNome = row[0]
+        pessId = row[1]
         # objPessVerificada = Pessoa(
-        return resultList[0]
+        pessAutenticada = model.Pessoa(pessNome,pessId)
+        return pessAutenticada
 
     if (len(resultList) > 1):
         return None
