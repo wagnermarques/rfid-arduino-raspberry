@@ -3,6 +3,7 @@ import datetime
 import serial
 import sqlite3Commands as dbCmd
 import arduinoCommands as duinoCmd
+import ledCommands as ledCmd
 
 import model
 
@@ -18,8 +19,8 @@ dbCmd.create_table()
 # G L O B A L   V A R S
 duino_dev = '/dev/ttyACM0'
 card_id = None
-tempo_de_releitura_de_cartao_nao_autorizado = 3
-
+tempo_de_releitura_do_serial_do_arduino = 1
+tempo_de_espera_da_catraca_liberada_pra_pessoa_passar = 2
 # S E T U P    S E R I A L
 try:
     ser = serial.Serial(
@@ -50,9 +51,6 @@ def handle_leitura_de_pessoa_nao_autenticada(id_card):
 
     # L O O P  D E  I N T E R A C A O   C O M   O   A R D U I N O
 while True:
-    print(datetime.datetime.now())
-    time.sleep(tempo_de_releitura_de_cartao_nao_autorizado)
-
     bytes_lidos = ser.readline()
     str_lida = bytes_lidos.decode()    
     leitura = str_lida.strip()
@@ -62,7 +60,7 @@ while True:
 
     # https://stackoverflow.com/questions/9573244/most-elegant-way-to-check-if-the-string-is-empty-in-python
     elif (leitura):
-
+        
         leitura_partes = leitura.split("|")
         leitura_parte1 = leitura_partes[0].strip()
         leitura_parte2 = leitura_partes[1].strip().split("!")[0]
@@ -73,7 +71,8 @@ while True:
         #Dentro desse if a gente so trata leituras de cartao e nenhuma outra msg que vem do arduino
         if(leitura_parte1 == "msg_card_uid"):
             #Se a primeira parte da leitura e msg_card_uid, a segunda e obviamente o card_uid
-            id_card = leitura_parte2 
+            id_card = leitura_parte2
+            
             
             # um registro representa a passagem do cartao
             # independente se essa passagem de cartao identifica realmente
@@ -83,17 +82,20 @@ while True:
             # o resultado indica se a pessoa foi identificada ou nao
             # se o resultVerificacao for None, significa que nao se identificou uma pessoa
             objPessoaAutenticada = dbCmd.verifica_pessoa_cadastrada_by_id_card(id_card)
-            print(objPessoaAutenticada.nome)
             if (objPessoaAutenticada is not None):
                 # esse 1 significa que a pessoa esta corretamente identificada
                 objRegistro.autorizado = 1
+                ledCmd.apaga_led_vermelho()
+                ledCmd.ascende_led_verde()                
                 # Na linha abaixo a gente diz pro registro da passagem do cartao qual foi o id da pessoa que foi identificada
                 objRegistro.id_pessoa_identificada = objPessoaAutenticada.matricula
-                handle_leitura_de_pessoa_autenticada(id_card,objPessoaAutenticada)            
+                handle_leitura_de_pessoa_autenticada(id_card,objPessoaAutenticada)
+                time.sleep(tempo_de_espera_da_catraca_liberada_pra_pessoa_passar)
+                ledCmd.apaga_led_verde()
             else:
                 #handling pessoa nao autorizada
                 #print("Nao Identificado:" + str(datetime.datetime.now()))
-                
+                ledCmd.ascende_led_vermelho()
                 #Considerando que mesmo que a leitura de pessoa nao autorizada tambem e registrada no banco
                 #Tem que ficar esperto porque nao vamos registrar cada leitura feita por este loope while
                 #porque seriam muitas leituras repetidas. Entao a gente que que ignorar algumas leituras
@@ -101,6 +103,8 @@ while True:
                 #Desprezamos 15 e gravamos 5...
                 #Essa logica vai ficar a cargo dessa funcaozinha abaixo
                 handle_leitura_de_pessoa_nao_autenticada(id_card) #leitura_parte2 nesta parte do co
+                time.sleep(tempo_de_releitura_do_serial_do_arduino)
+                ledCmd.apaga_led_vermelho()
                 # resultVerificacao vale None
                 # entao nao ganha o 1 de verdade ref a verificacao
                 
@@ -109,3 +113,7 @@ while True:
         # ou seja, identificada corretamente
         # ou nao.
         dbCmd.insert_into_registro(objRegistro)
+    #aguarda o tempo de leitura pra voltar a consultar o serial do arduino    
+    #print(datetime.datetime.now())
+    #time.sleep(tempo_de_releitura_do_serial_do_arduino)
+

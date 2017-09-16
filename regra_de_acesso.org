@@ -1,0 +1,10 @@
+
+* Quando identifica o usuario
+  Libera o acesso e o mesmo cartao so pode ser passado novamente apos 3 minutos
+
+* Quando nao libera
+  
+
+* Arq de configuracao
+  
+
