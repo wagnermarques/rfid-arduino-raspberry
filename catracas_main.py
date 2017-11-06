@@ -4,6 +4,7 @@ import serial
 import sqlite3Commands as dbCmd
 import arduinoCommands as duinoCmd
 import ledCommands as ledCmd
+import traceback
 
 import model
 
@@ -17,7 +18,8 @@ dbCmd.create_table()
 
 
 # G L O B A L   V A R S
-duino_dev = '/dev/ttyACM0'
+#duino_dev = '/dev/ttyACM0'
+duino_dev = '/dev/ttyUSB0'
 card_id = None
 tempo_de_releitura_do_serial_do_arduino = 1
 tempo_de_espera_da_catraca_liberada_pra_pessoa_passar = 2
@@ -37,6 +39,7 @@ try:
     ser.isOpen()
 except IOError:
     # Se o metodo isOpen() falhar, tentamos fechar e abrir de novo
+    traceback.print_exc();
     ser.close()
     ser.open()
 
@@ -50,6 +53,7 @@ def handle_leitura_de_pessoa_nao_autenticada(id_card):
     
 
     # L O O P  D E  I N T E R A C A O   C O M   O   A R D U I N O
+ledCmd.ascende_led_vermelho()    
 while True:
     bytes_lidos = ser.readline()
     str_lida = bytes_lidos.decode()    
@@ -91,11 +95,16 @@ while True:
                 objRegistro.id_pessoa_identificada = objPessoaAutenticada.matricula
                 handle_leitura_de_pessoa_autenticada(id_card,objPessoaAutenticada)
                 time.sleep(tempo_de_espera_da_catraca_liberada_pra_pessoa_passar)
-                ledCmd.apaga_led_verde()
+                #ledCmd.apaga_led_verde()
+                #pensando bem vou apagar la em baixo,
+                #pra dar um tempo pra pessoa passar na catraca
+                #ou simplesmente prover alguns segundos
+                #pra pessoa perceber o led verde
             else:
                 #handling pessoa nao autorizada
                 #print("Nao Identificado:" + str(datetime.datetime.now()))
-                ledCmd.ascende_led_vermelho()
+                #ledCmd.ascende_led_vermelho()
+                #nao autorizada o led vermelho ja estava asceso mesmo...
                 #Considerando que mesmo que a leitura de pessoa nao autorizada tambem e registrada no banco
                 #Tem que ficar esperto porque nao vamos registrar cada leitura feita por este loope while
                 #porque seriam muitas leituras repetidas. Entao a gente que que ignorar algumas leituras
@@ -104,7 +113,9 @@ while True:
                 #Essa logica vai ficar a cargo dessa funcaozinha abaixo
                 handle_leitura_de_pessoa_nao_autenticada(id_card) #leitura_parte2 nesta parte do co
                 time.sleep(tempo_de_releitura_do_serial_do_arduino)
-                ledCmd.apaga_led_vermelho()
+                #ledCmd.apaga_led_vermelho() vou manter o led vermelho asceso direto
+                #fica verde so um pouco pra indicar autenticacao
+                #fora isso e vermelho direto
                 # resultVerificacao vale None
                 # entao nao ganha o 1 de verdade ref a verificacao
                 
@@ -112,7 +123,10 @@ while True:
         # A passagem do cartao he registrada, tenho sido a pessoa autorizada
         # ou seja, identificada corretamente
         # ou nao.
+
         dbCmd.insert_into_registro(objRegistro)
+        ledCmd.apaga_led_verde()
+        ledCmd.ascende_led_vermelho()    
     #aguarda o tempo de leitura pra voltar a consultar o serial do arduino    
     #print(datetime.datetime.now())
     #time.sleep(tempo_de_releitura_do_serial_do_arduino)
