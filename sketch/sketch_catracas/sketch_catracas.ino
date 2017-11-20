@@ -27,7 +27,9 @@
    * SPI SCK     SCK          13 / ICSP-3   52        D13        ICSP-3           15
    *
    */
- 
+
+   
+
   #include "/usr/share/arduino/libraries/SPI/SPI.h"
   #include <MFRC522.h>
  
@@ -42,6 +44,9 @@
 
   boolean verifica_se_o_cartao_e_compativel();
   String obtem_string_tipo_do_cartao();
+  void destravaPraEntrar();
+  void destravaPraSair();
+
 
   void setup() {
       //Serial.println("=== void setup() {...");
@@ -59,7 +64,7 @@
    */ 
   void loop() { 
 
-       // Loop para leitura de cartoes
+       // Loop para leitura de cartoes       
       
       if ( ! mfrc522.PICC_IsNewCardPresent())
           return;
@@ -80,10 +85,17 @@
 	Serial.print("msg_card_uid |");
       for (byte i = 0; i < mfrc522.uid.size; i++) {
 	Serial.print(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " ");
-	Serial.print(mfrc522.uid.uidByte[i], HEX);
+	Serial.print(mfrc522.uid.uidByte[i], HEX);	
       }
-      Serial.print("!");
+      Serial.print("|");
 
+      //ouvindo respostas do rasp
+      //necessario pra ver se he pra abrir a catraca
+      if(Serial.available() > 0){
+        char charReceived = Serial.read();
+	if(charReceived == 'E') destravaPraEntrar();
+	if(charReceived == 'S') destravaPraSair();
+      }
   }
  
   boolean verifica_se_o_cartao_e_compativel(){
@@ -98,7 +110,10 @@
       return 1;
   }
 
-  
- 
-
+void destravaPraEntrar(){
+     Serial.println("Destravando pra Entrar");
+}
+void destravaPraSair(){
+     Serial.println("Destravando pra Sair");
+}
 

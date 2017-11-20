@@ -3,8 +3,8 @@ import datetime
 import serial
 import sqlite3Commands as dbCmd
 import arduinoCommands as duinoCmd
+import trava_catraca as catrCmd
 import ledCommands as ledCmd
-
 import model
 
 
@@ -21,6 +21,8 @@ duino_dev = '/dev/ttyACM0'
 card_id = None
 tempo_de_releitura_do_serial_do_arduino = 1
 tempo_de_espera_da_catraca_liberada_pra_pessoa_passar = 2
+
+
 # S E T U P    S E R I A L
 try:
     ser = serial.Serial(
@@ -43,10 +45,11 @@ except IOError:
 
     #FUNCS QUE TRATAM DE USUARIO AUTENTICADO E NAO ATENTICADO
 def handle_leitura_de_pessoa_autenticada(id_card,objPessoaAutenticada):
-    print("Autenticada :"+id_card+"PessoaAutenticada:"+objPessoaAutenticada.nome)
+    print("Autenticada :"+id_card+"PessoaAutenticada:"+objPessoaAutenticada.nome+"\n")
+    
 
 def handle_leitura_de_pessoa_nao_autenticada(id_card):
-    print("Nao Autenticada :" + id_card)
+    print("Nao Autenticada :" + id_card+"\n")
     
 
     # L O O P  D E  I N T E R A C A O   C O M   O   A R D U I N O
@@ -60,19 +63,16 @@ while True:
 
     # https://stackoverflow.com/questions/9573244/most-elegant-way-to-check-if-the-string-is-empty-in-python
     elif (leitura):
-        
+
         leitura_partes = leitura.split("|")
         leitura_parte1 = leitura_partes[0].strip()
-        leitura_parte2 = leitura_partes[1].strip().split("!")[0]
-
-        #print("leitura_parte1:"+leitura_parte1)
-        #print("leitura_parte2:"+leitura_parte2)
+        leitura_parte2 = leitura_partes[1].strip()
          
         #Dentro desse if a gente so trata leituras de cartao e nenhuma outra msg que vem do arduino
         if(leitura_parte1 == "msg_card_uid"):
             #Se a primeira parte da leitura e msg_card_uid, a segunda e obviamente o card_uid
             id_card = leitura_parte2
-            
+
             
             # um registro representa a passagem do cartao
             # independente se essa passagem de cartao identifica realmente
