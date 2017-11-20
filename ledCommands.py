@@ -6,14 +6,18 @@ GPIO.setmode(GPIO.BOARD)
 #Desativa warnings
 GPIO.setwarnings(False)
 
-pinVermelho = 7
+pinVermelho = 8
 pinVerde = 11
 
-#Configura pino 18 da placa (GPIO24) como saida
+#Configura pino 7 e 11 da placa (GPIO24) como saida
 GPIO.setup(pinVermelho,GPIO.OUT)
 GPIO.setup(pinVerde,GPIO.OUT)
 
+#Estado inicial dos leds = apagados
+GPIO.output(pinVerde, GPIO.LOW)    
 statusLedVermelho = False
+
+GPIO.output(pinVerde, GPIO.LOW)    
 statusLedVerde = False
 
 def ascende_led_verde():
